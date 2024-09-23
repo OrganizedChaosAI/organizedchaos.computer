@@ -171,11 +171,41 @@ function getWindowContent(name) {
         case 'art':
             return '<canvas class="art-canvas" width="350" height="250"></canvas>';
         case 'academy':
-            return '<h2>Welcome to the Academy</h2><p>Start learning today!</p>';
+            return `
+                <h2>Welcome to the Academy</h2>
+                <p>Start learning today!</p>
+                <select id="course-select">
+                    <option value="">Select a course</option>
+                    <option value="math">Mathematics</option>
+                    <option value="science">Science</option>
+                    <option value="history">History</option>
+                </select>
+                <div id="course-content"></div>
+            `;
         case 'work':
-            return '<h2>Work Dashboard</h2><p>Your tasks for today:</p><ul><li>Complete project proposal</li><li>Review team progress</li><li>Schedule client meeting</li></ul>';
+            return `
+                <h2>Work Dashboard</h2>
+                <div id="task-list">
+                    <h3>Your tasks for today:</h3>
+                    <ul>
+                        <li>Complete project proposal</li>
+                        <li>Review team progress</li>
+                        <li>Schedule client meeting</li>
+                    </ul>
+                </div>
+                <button id="add-task">Add New Task</button>
+            `;
         case 'fun':
-            return '<h2>Fun Zone</h2><p>Choose a game to play:</p><ul><li>Tic Tac Toe</li><li>Snake</li><li>Tetris</li></ul>';
+            return `
+                <h2>Fun Zone</h2>
+                <p>Choose a game to play:</p>
+                <ul id="game-list">
+                    <li><button class="game-button" data-game="tictactoe">Tic Tac Toe</button></li>
+                    <li><button class="game-button" data-game="snake">Snake</button></li>
+                    <li><button class="game-button" data-game="tetris">Tetris</button></li>
+                </ul>
+                <div id="game-area"></div>
+            `;
         default:
             return `Content for ${name}`;
     }
@@ -194,7 +224,17 @@ function initializeAppFunctionality(name, window) {
         case 'today':
             initializeCalendarApp(window);
             break;
-        // Add more cases for other apps as needed
+        case 'academy':
+            initializeAcademyApp(window);
+            break;
+        case 'work':
+            initializeWorkApp(window);
+            break;
+        case 'fun':
+            initializeFunApp(window);
+            break;
+        default:
+            console.log(`No specific initialization for ${name}`);
     }
 }
 
@@ -250,7 +290,14 @@ function initializeArtApp(window) {
 }
 
 function initializeCalendarApp(window) {
-    // Calendar app functionality can be expanded here
+    const calendarDays = window.querySelectorAll('.calendar-day');
+    calendarDays.forEach(day => {
+        day.addEventListener('click', () => {
+            if (day.textContent) {
+                alert(`You clicked on ${day.textContent} May 2023`);
+            }
+        });
+    });
 }
 
 function generateCalendar() {
@@ -271,6 +318,46 @@ function generateCalendar() {
     }
 
     return calendarHTML;
+}
+
+function initializeAcademyApp(window) {
+    const courseSelect = window.querySelector('#course-select');
+    const courseContent = window.querySelector('#course-content');
+
+    courseSelect.addEventListener('change', (e) => {
+        const course = e.target.value;
+        if (course) {
+            courseContent.innerHTML = `<p>You've selected the ${course} course. Content coming soon!</p>`;
+        } else {
+            courseContent.innerHTML = '';
+        }
+    });
+}
+
+function initializeWorkApp(window) {
+    const addTaskButton = window.querySelector('#add-task');
+    const taskList = window.querySelector('#task-list ul');
+
+    addTaskButton.addEventListener('click', () => {
+        const newTask = prompt('Enter a new task:');
+        if (newTask) {
+            const li = document.createElement('li');
+            li.textContent = newTask;
+            taskList.appendChild(li);
+        }
+    });
+}
+
+function initializeFunApp(window) {
+    const gameButtons = window.querySelectorAll('.game-button');
+    const gameArea = window.querySelector('#game-area');
+
+    gameButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const game = button.getAttribute('data-game');
+            gameArea.innerHTML = `<p>You've selected to play ${game}. Game loading...</p>`;
+        });
+    });
 }
 /* </Application Functionality> */
 
