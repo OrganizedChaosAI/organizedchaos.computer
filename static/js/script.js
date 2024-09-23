@@ -53,7 +53,7 @@ function createIcon(name, x, y, svg) {
         <div>${name}</div>
     `;
     icon.addEventListener('dblclick', () => openWindow(name));
-    makeDraggable(icon);
+    
     desktop.appendChild(icon);
 }
 
@@ -82,6 +82,11 @@ function createCustomIcon() {
 /* <Draggable - Resize Functionality> */
 function makeDraggable(element) {
     const header = element.querySelector('.window-header');
+    if (!header) {
+        console.warn('No .window-header found for draggable element:', element);
+        return; // Exit the function if there's no header
+    }
+
     let isDragging = false;
     let startX, startY;
 
