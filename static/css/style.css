@@ -309,7 +309,9 @@
             transition: background-color 0.2s ease-in-out;
             font-size: 24px;
             font-weight: bold;
+            transform: translateY(-5px); /* Move up by 5px */
         }
+        
         
         .window-controls .minimize {
             font-size: 34px;
