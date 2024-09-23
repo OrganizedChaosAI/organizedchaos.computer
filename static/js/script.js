@@ -28,15 +28,6 @@ function bringToFront(window) {
         taskbarItem.classList.add('active');
     }
 }
-function updateDateTime() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const dateString = now.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
-    
-    const datetimeDiv = document.getElementById('datetime');
-    datetimeDiv.innerHTML = `<span class="time">${timeString}</span><span class="date">${dateString}</span>`;
-}
-
 
 
 /* <Icon Data> */
@@ -440,6 +431,27 @@ function initializeTaskbar() {
     const taskbar = document.getElementById('taskbar');
     const openWindows = new Set();
 
+
+
+    const datetimeDiv = document.createElement('div');
+    datetimeDiv.id = 'datetime';
+    taskbar.appendChild(datetimeDiv);
+
+    function updateDateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const dateString = now.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+        
+        datetimeDiv.innerHTML = `<span class="time">${timeString}</span><span class="date">${dateString}</span>`;
+    }
+
+    // Call updateDateTime immediately and set interval
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+
+
+
+
     function createTaskbarItem(app) {
         if (openWindows.has(app)) return;
 
@@ -668,8 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Simulate a system notification after 5 seconds
     setTimeout(simulateSystemNotification, 5000);
-    updateDateTime();
-    setInterval(updateDateTime, 1000); // Update every second
+    
 });
 /* </Initialization> */
 
