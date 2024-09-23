@@ -374,26 +374,26 @@ padding: 0 12px;
         
         .right-handle {
             cursor: e-resize;
-            width: 10px; /* Increased from 5px */
-            right: -5px; /* Move it slightly outside the window */
+            width: 10px;
+            right: -5px;
             top: 0;
             bottom: 0;
         }
         
         .bottom-handle {
             cursor: s-resize;
-            height: 10px; /* Increased from 5px */
-            bottom: -5px; /* Move it slightly outside the window */
+            height: 10px;
+            bottom: -5px;
             left: 0;
             right: 0;
         }
         
         .corner-handle {
             cursor: se-resize;
-            width: 15px; /* Increased from 10px */
-            height: 15px; /* Increased from 10px */
-            right: -5px; /* Move it slightly outside the window */
-            bottom: -5px; /* Move it slightly outside the window */
+            width: 15px;
+            height: 15px;
+            right: -7px;
+            bottom: -7px;
         }
         /* </Window Styles> */
 
