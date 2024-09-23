@@ -88,7 +88,7 @@
                 existingWindow.style.display = 'block';
                 return;
             }
-
+        
             const window = document.createElement('div');
             window.className = 'window';
             window.setAttribute('data-app', name);
@@ -112,8 +112,14 @@
             desktop.appendChild(window);
             window.style.display = 'block';
             makeDraggable(window);
-
-            window.querySelector('.close').addEventListener('click', () => window.style.display = 'none');
+        
+            window.querySelector('.close').addEventListener('click', () => {
+                window.style.display = 'none';
+                const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
+                if (taskbarItem) {
+                    taskbarItem.remove();
+                }
+            });
             window.querySelector('.minimize').addEventListener('click', () => window.style.display = 'none');
             window.querySelector('.maximize').addEventListener('click', () => {
                 if (window.style.width === '100%') {
@@ -128,8 +134,12 @@
                     window.style.left = '0';
                 }
             });
-
+        
             initializeAppFunctionality(name, window);
+            
+            // Create taskbar item for the new window
+            const taskbarManagement = initializeTaskbar();
+            taskbarManagement.createTaskbarItem(name);
         }
 
         function getWindowContent(name) {
@@ -246,6 +256,77 @@
         }
         /* </Window Management> */
 
+
+/* <Taskbar Management> */
+function initializeTaskbar() {
+    const taskbar = document.getElementById('taskbar');
+    const openWindows = new Set();
+
+    function createTaskbarItem(app) {
+        if (openWindows.has(app)) return;
+
+        openWindows.add(app);
+        const taskbarItem = document.createElement('div');
+        taskbarItem.className = 'taskbar-item';
+        taskbarItem.setAttribute('data-app', app);
+        
+        // Use the SVG icon from the start menu
+        const startMenuItem = document.querySelector(`.start-menu-item[data-app="${app}"]`);
+        const svgIcon = startMenuItem ? startMenuItem.querySelector('svg').cloneNode(true) : '';
+        
+        taskbarItem.innerHTML = `
+            ${svgIcon.outerHTML || ''}
+            <span>${app}</span>
+            <span class="taskbar-item-close">×</span>
+        `;
+        
+        taskbarItem.addEventListener('click', (e) => {
+            if (e.target.classList.contains('taskbar-item-close')) {
+                closeWindow(app);
+                taskbarItem.remove();
+                openWindows.delete(app);
+            } else {
+                toggleWindow(app);
+            }
+        });
+        
+        taskbar.appendChild(taskbarItem);
+    }
+
+    function toggleWindow(app) {
+        const appWindow = document.querySelector(`.window[data-app="${app}"]`);
+        if (appWindow) {
+            if (appWindow.style.display === 'none') {
+                appWindow.style.display = 'block';
+            } else {
+                appWindow.style.display = 'none';
+            }
+        }
+    }
+
+    function closeWindow(app) {
+        const appWindow = document.querySelector(`.window[data-app="${app}"]`);
+        if (appWindow) {
+            appWindow.remove();
+        }
+    }
+
+    // Observe desktop for changes to update taskbar
+    const desktopObserver = new MutationObserver(() => {
+        const currentWindows = document.querySelectorAll('.window');
+        currentWindows.forEach(window => {
+            const app = window.getAttribute('data-app');
+            if (!openWindows.has(app)) {
+                createTaskbarItem(app);
+            }
+        });
+    });
+    desktopObserver.observe(desktop, { childList: true });
+
+    return { createTaskbarItem, toggleWindow, closeWindow };
+}
+/* </Taskbar Management> */
+
         /* <Context Menu Logic> */
         function showContextMenu(e) {
             e.preventDefault();
@@ -350,37 +431,7 @@
             });
         }
 
-        function initializeTaskbar() {
-            const openWindows = new Set();
-            const taskbar = document.getElementById('taskbar');
-
-            function updateTaskbar() {
-                const currentWindows = document.querySelectorAll('.window');
-                currentWindows.forEach(window => {
-                    const app = window.getAttribute('data-app');
-                    if (!openWindows.has(app)) {
-                        openWindows.add(app);
-                        const taskbarItem = document.createElement('div');
-                        taskbarItem.className = 'taskbar-item';
-                        taskbarItem.setAttribute('data-app', app);
-                        taskbarItem.innerHTML = `<img src="path/to/${app.toLowerCase()}-icon.png" alt="${app}">`;
-                        taskbarItem.addEventListener('click', () => {
-                            const appWindow = document.querySelector(`.window[data-app="${app}"]`);
-                            if (appWindow.style.display === 'none') {
-                                appWindow.style.display = 'block';
-                            } else {
-                                appWindow.style.display = 'none';
-                            }
-                        });
-                        taskbar.appendChild(taskbarItem);
-                    }
-                });
-            }
-
-            // Call updateTaskbar whenever a new window is opened or closed
-            const desktopObserver = new MutationObserver(updateTaskbar);
-            desktopObserver.observe(desktop, { childList: true });
-        }
+        
 
         document.addEventListener('DOMContentLoaded', () => {
             initializeDesktop();
