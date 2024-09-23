@@ -98,13 +98,16 @@
     opacity: 1;
 }
 
-.taskbar-item.active::after {
+.taskbar-item {
+    position: relative;
+}
+
+.taskbar-item.active::before {
     content: '';
     position: absolute;
     top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 16px;
+    left: 0;
+    right: 0;
     height: 2px;
     background-color: #fff;
 }
@@ -291,7 +294,8 @@
         }
         .window-controls {
             display: flex;
-            align-items: center;
+            align-items: stretch;
+            height: 100%;
         }
         
         .window-controls span {
@@ -299,14 +303,22 @@
             align-items: center;
             justify-content: center;
             width: 46px;
-            height: 30px;
             cursor: pointer;
             transition: background-color 0.2s ease-in-out;
-            font-size: 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .window-controls .minimize {
+            font-size: 24px;
         }
         
         .window-controls .maximize {
-            padding-bottom: 4px; /* Move the maximize symbol up a bit */
+            font-size: 14px;
+        }
+        
+        .window-controls .close {
+            font-size: 20px;
         }
         
         .window-controls span:hover {
