@@ -75,41 +75,49 @@
     display: flex;
     align-items: center;
     padding: 0 10px;
-    margin-right: 2px;
-    background-color: rgba(77, 77, 77, 0.5);
+    margin-right: 4px;
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
+    position: relative;
+    color: white;
+    font-size: 12px;
 }
+
 .taskbar-item:hover {
-    background-color: rgba(100, 100, 100, 0.7);
+    background-color: rgba(255, 255, 255, 0.2);
 }
+
+.taskbar-item.active {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
 .taskbar-item svg {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
 }
+
 .taskbar-item-close {
-    margin-left: 5px;
+    margin-left: 8px;
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
 }
+
 .taskbar-item:hover .taskbar-item-close {
     opacity: 1;
-}
-
-.taskbar-item {
-    position: relative;
 }
 
 .taskbar-item.active::before {
     content: '';
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
     right: 0;
     height: 2px;
     background-color: #fff;
+    border-radius: 2px 2px 0 0;
 }
 
 #datetime {
