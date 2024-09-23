@@ -109,7 +109,16 @@ function makeDraggable(element) {
 function openWindow(name) {
     let existingWindow = document.querySelector(`.window[data-app="${name}"]`);
     if (existingWindow) {
-        existingWindow.style.display = 'block';
+        if (existingWindow.style.display === 'none') {
+            const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
+            const rect = taskbarItem.getBoundingClientRect();
+            existingWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
+            existingWindow.style.display = 'block';
+            existingWindow.classList.add('maximizing');
+            setTimeout(() => {
+                existingWindow.classList.remove('maximizing');
+            }, 300);
+        }
         bringToFront(existingWindow);
         return;
     }
@@ -151,6 +160,30 @@ function openWindow(name) {
             }
         }
     });
+
+
+//Begin new minimize 
+
+window.querySelector('.minimize').addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent the window from being brought to front
+    const rect = window.getBoundingClientRect();
+    const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
+    const taskbarRect = taskbarItem.getBoundingClientRect();
+
+    // Set the transform-origin to the position of the taskbar item
+    window.style.transformOrigin = `${taskbarRect.left - rect.left}px ${taskbarRect.top - rect.top}px`;
+
+    window.classList.add('minimizing');
+    setTimeout(() => {
+        window.style.display = 'none';
+        window.classList.remove('minimizing');
+    }, 300); // Match this to the CSS transition duration
+});
+//End new minimize
+
+
+
+
     window.querySelector('.minimize').addEventListener('click', () => window.style.display = 'none');
     window.querySelector('.maximize').addEventListener('click', () => {
         if (window.style.width === '100%') {
@@ -415,7 +448,13 @@ function initializeTaskbar() {
                 const appWindow = document.querySelector(`.window[data-app="${app}"]`);
                 if (appWindow) {
                     if (appWindow.style.display === 'none') {
+                        const rect = taskbarItem.getBoundingClientRect();
+                        appWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
                         appWindow.style.display = 'block';
+                        appWindow.classList.add('maximizing');
+                        setTimeout(() => {
+                            appWindow.classList.remove('maximizing');
+                        }, 300); // Match this to the CSS transition duration
                     }
                     bringToFront(appWindow);
                 }

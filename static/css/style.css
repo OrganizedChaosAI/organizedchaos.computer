@@ -247,10 +247,21 @@
             overflow: hidden;
             backdrop-filter: blur(10px);
             z-index: 1000;
+            transition: all 0.3s ease-in-out;
         }
         .window.active {
             /* You can add additional styles for the active window if desired */
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .window.minimizing {
+            transform: scale(0.1);
+            opacity: 0;
+            transform-origin: bottom left;
+        }
+        
+        .window.maximizing {
+            transform: scale(1);
+            opacity: 1;
         }
         .window-header {
             background-color: rgba(56, 56, 56, 0.8);
