@@ -79,10 +79,14 @@ function createCustomIcon() {
 }
 /* </Desktop Management> */
 
-/* <Draggable Functionality> */
+/* <Draggable - Resize Functionality> */
 function makeDraggable(element) {
+    const header = element.querySelector('.window-header');
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    element.onmousedown = dragMouseDown;
+
+    if (header) {
+        header.onmousedown = dragMouseDown;
+    }
 
     function dragMouseDown(e) {
         e.preventDefault();
@@ -107,7 +111,51 @@ function makeDraggable(element) {
         document.onmousemove = null;
     }
 }
-/* </Draggable Functionality> */
+function makeResizable(element) {
+    const rightHandle = document.createElement('div');
+    rightHandle.className = 'resize-handle right-handle';
+    const bottomHandle = document.createElement('div');
+    bottomHandle.className = 'resize-handle bottom-handle';
+    const cornerHandle = document.createElement('div');
+    cornerHandle.className = 'resize-handle corner-handle';
+
+    element.appendChild(rightHandle);
+    element.appendChild(bottomHandle);
+    element.appendChild(cornerHandle);
+
+    let startX, startY, startWidth, startHeight;
+
+    function initResize(e, handle) {
+        e.preventDefault();
+        startX = e.clientX;
+        startY = e.clientY;
+        startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
+        startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
+        document.addEventListener('mousemove', resize);
+        document.addEventListener('mouseup', stopResize);
+    }
+
+    function resize(e) {
+        if (e.target === rightHandle || e.target === cornerHandle) {
+            const width = startWidth + e.clientX - startX;
+            element.style.width = width + 'px';
+        }
+        if (e.target === bottomHandle || e.target === cornerHandle) {
+            const height = startHeight + e.clientY - startY;
+            element.style.height = height + 'px';
+        }
+    }
+
+    function stopResize() {
+        document.removeEventListener('mousemove', resize);
+        document.removeEventListener('mouseup', stopResize);
+    }
+
+    rightHandle.addEventListener('mousedown', (e) => initResize(e, rightHandle));
+    bottomHandle.addEventListener('mousedown', (e) => initResize(e, bottomHandle));
+    cornerHandle.addEventListener('mousedown', (e) => initResize(e, cornerHandle));
+}
+/* </Draggable - Resize Functionality> */
 
 /* <Window Management> */
 function openWindow(name) {
@@ -157,6 +205,7 @@ function openWindow(name) {
     desktop.appendChild(window);
     window.style.display = 'block';
     makeDraggable(window);
+    makeResizable(window);
     bringToFront(window);
 
     window.addEventListener('mousedown', () => bringToFront(window));
