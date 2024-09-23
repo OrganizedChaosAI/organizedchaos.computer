@@ -28,7 +28,14 @@ function bringToFront(window) {
         taskbarItem.classList.add('active');
     }
 }
-
+function updateDateTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const dateString = now.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+    
+    const datetimeDiv = document.getElementById('datetime');
+    datetimeDiv.innerHTML = `<span class="time">${timeString}</span><span class="date">${dateString}</span>`;
+}
 
 
 
@@ -661,6 +668,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Simulate a system notification after 5 seconds
     setTimeout(simulateSystemNotification, 5000);
+    updateDateTime();
+    setInterval(updateDateTime, 1000); // Update every second
 });
 /* </Initialization> */
 

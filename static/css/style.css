@@ -111,6 +111,20 @@
     height: 2px;
     background-color: #fff;
 }
+
+#datetime {
+    position: absolute;
+    right: 10px;
+    bottom: 5px;
+    color: white;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+}
+
+#datetime .time {
+    margin-right: 10px;
+}
 /* </Taskbar Styles> */
 
         /* <Context Menu Styles> */
