@@ -82,82 +82,75 @@ function createCustomIcon() {
 /* <Draggable - Resize Functionality> */
 function makeDraggable(element) {
     const header = element.querySelector('.window-header');
-    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    let isDragging = false;
+    let startX, startY;
 
-    if (header) {
-        header.onmousedown = dragMouseDown;
+    header.addEventListener('mousedown', initDrag);
+
+    function initDrag(e) {
+        isDragging = true;
+        startX = e.clientX - element.offsetLeft;
+        startY = e.clientY - element.offsetTop;
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDrag);
     }
 
-    function dragMouseDown(e) {
-        e.preventDefault();
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
+    function drag(e) {
+        if (isDragging) {
+            e.preventDefault();
+            const newX = e.clientX - startX;
+            const newY = e.clientY - startY;
+            element.style.left = `${newX}px`;
+            element.style.top = `${newY}px`;
+        }
     }
 
-    function elementDrag(e) {
-        e.preventDefault();
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        element.style.top = (element.offsetTop - pos2) + "px";
-        element.style.left = (element.offsetLeft - pos1) + "px";
-    }
-
-    function closeDragElement() {
-        document.onmouseup = null;
-        document.onmousemove = null;
+    function stopDrag() {
+        isDragging = false;
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', stopDrag);
     }
 }
 function makeResizable(element) {
-    const rightHandle = document.createElement('div');
-    rightHandle.className = 'resize-handle right-handle';
-    const bottomHandle = document.createElement('div');
-    bottomHandle.className = 'resize-handle bottom-handle';
-    const cornerHandle = document.createElement('div');
-    cornerHandle.className = 'resize-handle corner-handle';
+    const handles = ['right', 'bottom', 'corner'];
+    const minWidth = 200;
+    const minHeight = 100;
 
-    element.appendChild(rightHandle);
-    element.appendChild(bottomHandle);
-    element.appendChild(cornerHandle);
+    handles.forEach(type => {
+        const handle = document.createElement('div');
+        handle.className = `resize-handle ${type}-handle`;
+        element.appendChild(handle);
 
-    let startX, startY, startWidth, startHeight;
+        let startX, startY, startWidth, startHeight;
 
-    function initResize(e) {
-        e.preventDefault();
-        startX = e.clientX;
-        startY = e.clientY;
-        startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
-        startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
-        document.addEventListener('mousemove', resize);
-        document.addEventListener('mouseup', stopResize);
-    }
+        const initResize = (e) => {
+            e.stopPropagation();
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = parseInt(getComputedStyle(element).width, 10);
+            startHeight = parseInt(getComputedStyle(element).height, 10);
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('mouseup', stopResize);
+        };
 
-    function resize(e) {
-        if (e.target === rightHandle || e.target === cornerHandle) {
-            const width = startWidth + e.clientX - startX;
-            if (width > 200) { // Minimum width
-                element.style.width = width + 'px';
+        const resize = (e) => {
+            if (type === 'right' || type === 'corner') {
+                const width = Math.max(minWidth, startWidth + e.clientX - startX);
+                element.style.width = `${width}px`;
             }
-        }
-        if (e.target === bottomHandle || e.target === cornerHandle) {
-            const height = startHeight + e.clientY - startY;
-            if (height > 100) { // Minimum height
-                element.style.height = height + 'px';
+            if (type === 'bottom' || type === 'corner') {
+                const height = Math.max(minHeight, startHeight + e.clientY - startY);
+                element.style.height = `${height}px`;
             }
-        }
-    }
+        };
 
-    function stopResize() {
-        document.removeEventListener('mousemove', resize);
-        document.removeEventListener('mouseup', stopResize);
-    }
+        const stopResize = () => {
+            document.removeEventListener('mousemove', resize);
+            document.removeEventListener('mouseup', stopResize);
+        };
 
-    rightHandle.addEventListener('mousedown', initResize);
-    bottomHandle.addEventListener('mousedown', initResize);
-    cornerHandle.addEventListener('mousedown', initResize);
+        handle.addEventListener('mousedown', initResize);
+    });
 }
 /* </Draggable - Resize Functionality> */
 
