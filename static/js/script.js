@@ -165,26 +165,25 @@ function openWindow(name) {
 //Begin new minimize 
 
 window.querySelector('.minimize').addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevent the window from being brought to front
+    e.stopPropagation();
     const rect = window.getBoundingClientRect();
     const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
     const taskbarRect = taskbarItem.getBoundingClientRect();
 
-    // Set the transform-origin to the position of the taskbar item
     window.style.transformOrigin = `${taskbarRect.left - rect.left}px ${taskbarRect.top - rect.top}px`;
 
     window.classList.add('minimizing');
     setTimeout(() => {
         window.style.display = 'none';
         window.classList.remove('minimizing');
-    }, 300); // Match this to the CSS transition duration
+    }, 300);
 });
 //End new minimize
 
 
 
 
-    window.querySelector('.minimize').addEventListener('click', () => window.style.display = 'none');
+    
     window.querySelector('.maximize').addEventListener('click', () => {
         if (window.style.width === '100%') {
             window.style.width = '400px';
@@ -454,7 +453,7 @@ function initializeTaskbar() {
                         appWindow.classList.add('maximizing');
                         setTimeout(() => {
                             appWindow.classList.remove('maximizing');
-                        }, 300); // Match this to the CSS transition duration
+                        }, 300);
                     }
                     bringToFront(appWindow);
                 }

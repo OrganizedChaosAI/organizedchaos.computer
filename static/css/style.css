@@ -247,19 +247,20 @@
             overflow: hidden;
             backdrop-filter: blur(10px);
             z-index: 1000;
-            transition: all 0.3s ease-in-out;
+            transition: none;
         }
         .window.active {
             /* You can add additional styles for the active window if desired */
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
         .window.minimizing {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
             transform: scale(0.1);
             opacity: 0;
-            transform-origin: bottom left;
         }
         
         .window.maximizing {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
             transform: scale(1);
             opacity: 1;
         }
