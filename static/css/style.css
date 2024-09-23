@@ -46,7 +46,7 @@
 /* <Taskbar Styles> */
 #taskbar {
     height: 40px;
-    background-color: rgba(45, 45, 45, 0.8);
+    background-color: rgba(25, 25, 25, 0.8); /* Darker background */
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -76,7 +76,7 @@
     align-items: center;
     padding: 0 12px;
     margin-right: 4px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05); /* Slightly visible background */
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
@@ -86,12 +86,9 @@
 }
 
 .taskbar-item:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.1); /* Lighter on hover */
 }
 
-.taskbar-item.active {
-    background-color: rgba(255, 255, 255, 0.3);
-}
 
 .taskbar-item svg {
     width: 18px; /* Slightly increased icon size */
@@ -107,7 +104,7 @@
     transform: translateX(-50%);
     width: 30%; /* Increased width to 30% */
     height: 3px; /* Increased height for a thicker indicator */
-   /* background-color: #fff;*/
+    background-color: #fff;
     border-radius: 0 0 2px 2px;
 }
 
