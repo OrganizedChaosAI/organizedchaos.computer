@@ -214,6 +214,7 @@ window.querySelector('.minimize').addEventListener('click', (e) => {
     if (taskbarManagement) {
         taskbarManagement.createTaskbarItem(name);
     }
+    bringToFront(window); 
 }
 
 function getWindowContent(name) {
@@ -467,53 +468,47 @@ function initializeTaskbar() {
         taskbarItem.innerHTML = `
             ${svgIcon.outerHTML || ''}
             <span>${app}</span>
-            <span class="taskbar-item-close">×</span>
+            
         `;
         
-        taskbarItem.addEventListener('click', (e) => {
-            if (e.target.classList.contains('taskbar-item-close')) {
-                closeWindow(app);
-                taskbarItem.remove();
-                openWindows.delete(app);
-            } else {
-                const appWindow = document.querySelector(`.window[data-app="${app}"]`);
-                if (appWindow) {
-                    if (appWindow.style.display === 'none') {
-                        // Maximize the window
-                        const rect = taskbarItem.getBoundingClientRect();
-                        appWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
-                        appWindow.style.transform = 'scale(0.1)';
-                        appWindow.style.opacity = '0';
-                        appWindow.style.display = 'block';
-                        
-                        requestAnimationFrame(() => {
-                            appWindow.classList.add('maximizing');
-                            appWindow.style.transform = 'scale(1)';
-                            appWindow.style.opacity = '1';
-                        });
+        taskbarItem.addEventListener('click', () => {
+            const appWindow = document.querySelector(`.window[data-app="${app}"]`);
+            if (appWindow) {
+                if (appWindow.style.display === 'none') {
+                    // Maximize the window
+                    const rect = taskbarItem.getBoundingClientRect();
+                    appWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
+                    appWindow.style.transform = 'scale(0.1)';
+                    appWindow.style.opacity = '0';
+                    appWindow.style.display = 'block';
+                    
+                    requestAnimationFrame(() => {
+                        appWindow.classList.add('maximizing');
+                        appWindow.style.transform = 'scale(1)';
+                        appWindow.style.opacity = '1';
+                    });
         
-                        appWindow.addEventListener('transitionend', function handler() {
-                            appWindow.classList.remove('maximizing');
-                            appWindow.style.transform = '';
-                            appWindow.style.opacity = '';
-                            appWindow.removeEventListener('transitionend', handler);
-                        });
-                        bringToFront(appWindow);
-                    } else if (appWindow.classList.contains('active')) {
-                        // Minimize the window if it's active
-                        const rect = appWindow.getBoundingClientRect();
-                        const taskbarRect = taskbarItem.getBoundingClientRect();
-                        appWindow.style.transformOrigin = `${taskbarRect.left - rect.left}px ${taskbarRect.top - rect.top}px`;
-                        appWindow.classList.add('minimizing');
-                        setTimeout(() => {
-                            appWindow.style.display = 'none';
-                            appWindow.classList.remove('minimizing');
-                            taskbarItem.classList.remove('active');
-                        }, 300);
-                    } else {
-                        // Bring window to front if it's not active
-                        bringToFront(appWindow);
-                    }
+                    appWindow.addEventListener('transitionend', function handler() {
+                        appWindow.classList.remove('maximizing');
+                        appWindow.style.transform = '';
+                        appWindow.style.opacity = '';
+                        appWindow.removeEventListener('transitionend', handler);
+                    });
+                    bringToFront(appWindow);
+                } else if (appWindow.classList.contains('active')) {
+                    // Minimize the window if it's active
+                    const rect = appWindow.getBoundingClientRect();
+                    const taskbarRect = taskbarItem.getBoundingClientRect();
+                    appWindow.style.transformOrigin = `${taskbarRect.left - rect.left}px ${taskbarRect.top - rect.top}px`;
+                    appWindow.classList.add('minimizing');
+                    setTimeout(() => {
+                        appWindow.style.display = 'none';
+                        appWindow.classList.remove('minimizing');
+                        taskbarItem.classList.remove('active');
+                    }, 300);
+                } else {
+                    // Bring window to front if it's not active
+                    bringToFront(appWindow);
                 }
             }
         });
