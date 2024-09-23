@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organized Chaos Chat</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/icon.png') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div id="canvas"></div>
+    <div id="ui">
+        <textarea id="textInput" placeholder="Type your text here" rows="4"></textarea>
+    </div>
+    <div id="button-container">
+        <button id="disperseBtn">Disperse</button>
+        <button id="reformBtn">Reform</button>
+    </div>
+    <div id="control-panel">
+        <h2>Control Panel</h2>
+        <div class="control">
+            <label for="elementSize">Element Size: <span id="elementSizeValue">0.10</span></label>
+            <input type="range" id="elementSize" min="0.05" max="1" step="0.01" value="0.1">
+        </div>
+        <div class="control">
+            <label for="letterSpacing">Letter Spacing: <span id="letterSpacingValue">.5</span></label>
+            <input type="range" id="letterSpacing" min="0.1" max="5" step="0.1" value="0.5">
+        </div>
+        <div class="control">
+            <label for="lineHeight">Line Height: <span id="lineHeightValue">2.00</span></label>
+            <input type="range" id="lineHeight" min="1" max="5" step="0.1" value="2">
+        </div>
+        <div class="control">
+            <label for="letterScale">Letter Scale: <span id="letterScaleValue">1.00</span></label>
+            <input type="range" id="letterScale" min="0.5" max="2" step="0.1" value="1">
+        </div>
+        <div class="control">
+            <label for="flyInSpeed">Fly-In Speed: <span id="flyInSpeedValue">1.50</span></label>
+            <input type="range" id="flyInSpeed" min="0.1" max="5" step="0.1" value="1.5">
+        </div>
+        <div class="control">
+            <label for="disperseSpeed">Disperse Speed: <span id="disperseSpeedValue">1.50</span></label>
+            <input type="range" id="disperseSpeed" min="0.1" max="5" step="0.1" value="1.5">
+        </div>
+        <div class="control">
+            <label for="elementColor">Element Color:</label>
+            <input type="color" id="elementColor" value="#FFFFFF">
+        </div>
+        <div class="control">
+            <label for="systemType">System Type:</label>
+            <select id="systemType">
+                <option value="cube">Cube</option>
+                <option value="sphere">Sphere</option>
+                <option value="particle">Particle</option>
+            </select>
+        </div>
+        <div class="control">
+            <label for="flyInStyle">Fly-In Style:</label>
+            <select id="flyInStyle">
+                <option value="fadeIn">Fade In</option>
+                <option value="fromSides">From Sides</option>
+                <option value="fromBottom">From Bottom</option>
+                <option value="spiral">Spiral</option>
+                <option value="elastic">Elastic</option>
+                <option value="bounce">Bounce</option>
+                <option value="wave">Wave</option>
+                <option value="vortex">Vortex</option>
+                <option value="blackHole">Black Hole</option>
+            </select>
+        </div>
+        <div class="control">
+            <label for="disperseStyle">Disperse Style:</label>
+            <select id="disperseStyle">
+                <option value="fadeOut">Fade Out</option>
+                <option value="toSides">To Sides</option>
+                <option value="toBottom">To Bottom</option>
+                <option value="spiral">Spiral</option>
+                <option value="elastic">Elastic</option>
+                <option value="bounce">Bounce</option>
+                <option value="wave">Wave</option>
+                <option value="vortex">Vortex</option>
+                <option value="blackHole">Black Hole</option>
+            </select>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
