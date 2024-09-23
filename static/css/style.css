@@ -107,7 +107,7 @@
     transform: translateX(-50%);
     width: 30%; /* Increased width to 30% */
     height: 3px; /* Increased height for a thicker indicator */
-    background-color: #fff;
+   /* background-color: #fff;*/
     border-radius: 0 0 2px 2px;
 }
 
