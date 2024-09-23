@@ -290,7 +290,7 @@
         .window-content {
             padding: 10px;
             overflow: auto;
-            height: calc(100% - 35px);
+            height: calc(100% - 55px);
         }
         .window-controls {
             display: flex;
