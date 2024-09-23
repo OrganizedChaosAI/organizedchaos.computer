@@ -7,7 +7,24 @@ const contextMenu = document.getElementById('context-menu');
 const startButton = document.getElementById('start-button');
 const startMenu = document.getElementById('start-menu');
 let taskbarManagement;
+let highestZIndex = 1000;
 /* </Global Variables> */
+
+
+
+function bringToFront(window) {
+    highestZIndex++;
+    window.style.zIndex = highestZIndex;
+    
+    // Remove 'active' class from all windows
+    document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
+    
+    // Add 'active' class to the focused window
+    window.classList.add('active');
+}
+
+
+
 
 /* <Icon Data> */
 let icons = [
@@ -93,6 +110,7 @@ function openWindow(name) {
     let existingWindow = document.querySelector(`.window[data-app="${name}"]`);
     if (existingWindow) {
         existingWindow.style.display = 'block';
+        bringToFront(existingWindow);
         return;
     }
 
@@ -119,6 +137,10 @@ function openWindow(name) {
     desktop.appendChild(window);
     window.style.display = 'block';
     makeDraggable(window);
+    bringToFront(window);
+
+
+    window.addEventListener('mousedown', () => bringToFront(window));
 
     window.querySelector('.close').addEventListener('click', () => {
         window.remove();
@@ -390,7 +412,13 @@ function initializeTaskbar() {
                 taskbarItem.remove();
                 openWindows.delete(app);
             } else {
-                toggleWindow(app);
+                const appWindow = document.querySelector(`.window[data-app="${app}"]`);
+                if (appWindow) {
+                    if (appWindow.style.display === 'none') {
+                        appWindow.style.display = 'block';
+                    }
+                    bringToFront(appWindow);
+                }
             }
         });
         

@@ -246,6 +246,11 @@
             border-radius: 5px;
             overflow: hidden;
             backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        .window.active {
+            /* You can add additional styles for the active window if desired */
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
         .window-header {
             background-color: rgba(56, 56, 56, 0.8);
