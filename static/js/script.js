@@ -492,6 +492,25 @@ function initializeTaskbar() {
         taskbar.appendChild(taskbarItem);
     }
 
+    function toggleWindow(app) {
+        const appWindow = document.querySelector(`.window[data-app="${app}"]`);
+        if (appWindow) {
+            if (appWindow.style.display === 'none') {
+                appWindow.style.display = 'block';
+            } else {
+                appWindow.style.display = 'none';
+            }
+        }
+    }
+
+    function closeWindow(app) {
+        const appWindow = document.querySelector(`.window[data-app="${app}"]`);
+        if (appWindow) {
+            appWindow.remove();
+        }
+    }
+
+    // Observe desktop for changes to update taskbar
     const desktopObserver = new MutationObserver(() => {
         const currentWindows = document.querySelectorAll('.window');
         currentWindows.forEach(window => {
@@ -503,7 +522,7 @@ function initializeTaskbar() {
     });
     desktopObserver.observe(desktop, { childList: true });
 
-    return { createTaskbarItem };
+    return { createTaskbarItem, toggleWindow, closeWindow };
 }
 /* </Taskbar Management> */
 
