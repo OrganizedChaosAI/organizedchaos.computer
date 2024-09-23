@@ -314,7 +314,7 @@ padding: 0 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: move;
+            
         }
         
         .window-content {
@@ -374,26 +374,26 @@ padding: 0 12px;
         
         .right-handle {
             cursor: e-resize;
-            width: 5px;
-            right: 0;
+            width: 10px; /* Increased from 5px */
+            right: -5px; /* Move it slightly outside the window */
             top: 0;
             bottom: 0;
         }
         
         .bottom-handle {
             cursor: s-resize;
-            height: 5px;
-            bottom: 0;
+            height: 10px; /* Increased from 5px */
+            bottom: -5px; /* Move it slightly outside the window */
             left: 0;
             right: 0;
         }
         
         .corner-handle {
             cursor: se-resize;
-            width: 10px;
-            height: 10px;
-            right: 0;
-            bottom: 0;
+            width: 15px; /* Increased from 10px */
+            height: 15px; /* Increased from 10px */
+            right: -5px; /* Move it slightly outside the window */
+            bottom: -5px; /* Move it slightly outside the window */
         }
         /* </Window Styles> */
 
