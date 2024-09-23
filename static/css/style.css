@@ -119,11 +119,10 @@
     transform: translateY(-50%);
     color: white;
     font-size: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    padding: 5px;
-    border-radius: 4px;
+    display: inline-block;
+    text-align: right;
+    padding: 2px 4px;
+    border-radius: 2px;
     transition: background-color 0.2s ease-in-out;
 }
 
@@ -132,12 +131,13 @@
 }
 
 #datetime .time {
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 13px;
+    display: block;
 }
 
 #datetime .date {
     font-size: 11px;
+    display: block;
 }
 /* </Taskbar Styles> */
 
