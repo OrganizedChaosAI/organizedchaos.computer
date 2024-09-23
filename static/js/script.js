@@ -125,7 +125,7 @@ function makeResizable(element) {
 
     let startX, startY, startWidth, startHeight;
 
-    function initResize(e, handle) {
+    function initResize(e) {
         e.preventDefault();
         startX = e.clientX;
         startY = e.clientY;
@@ -138,11 +138,15 @@ function makeResizable(element) {
     function resize(e) {
         if (e.target === rightHandle || e.target === cornerHandle) {
             const width = startWidth + e.clientX - startX;
-            element.style.width = width + 'px';
+            if (width > 200) { // Minimum width
+                element.style.width = width + 'px';
+            }
         }
         if (e.target === bottomHandle || e.target === cornerHandle) {
             const height = startHeight + e.clientY - startY;
-            element.style.height = height + 'px';
+            if (height > 100) { // Minimum height
+                element.style.height = height + 'px';
+            }
         }
     }
 
@@ -151,9 +155,9 @@ function makeResizable(element) {
         document.removeEventListener('mouseup', stopResize);
     }
 
-    rightHandle.addEventListener('mousedown', (e) => initResize(e, rightHandle));
-    bottomHandle.addEventListener('mousedown', (e) => initResize(e, bottomHandle));
-    cornerHandle.addEventListener('mousedown', (e) => initResize(e, cornerHandle));
+    rightHandle.addEventListener('mousedown', initResize);
+    bottomHandle.addEventListener('mousedown', initResize);
+    cornerHandle.addEventListener('mousedown', initResize);
 }
 /* </Draggable - Resize Functionality> */
 
