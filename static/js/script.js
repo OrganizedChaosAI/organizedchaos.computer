@@ -182,7 +182,7 @@ window.querySelector('.minimize').addEventListener('click', (e) => {
 
 
 
-
+/*
     
     window.querySelector('.maximize').addEventListener('click', () => {
         if (window.style.width === '100%') {
@@ -197,7 +197,7 @@ window.querySelector('.minimize').addEventListener('click', (e) => {
             window.style.left = '0';
         }
     });
-
+*/
     initializeAppFunctionality(name, window);
     
     if (taskbarManagement) {
