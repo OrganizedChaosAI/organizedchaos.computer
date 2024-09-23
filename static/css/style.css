@@ -309,23 +309,27 @@
             transition: background-color 0.2s ease-in-out;
             font-size: 24px;
             font-weight: bold;
-            
+            height: 100%; /* Ensure the span takes full height */
+            position: relative; /* Add this */
         }
         
+        .window-controls span::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 5px; /* Move the content up */
+        }
         
         .window-controls .minimize {
             font-size: 34px;
-            transform: translateY(-5px); /* Move up by 5px */
         }
-        .window-controls .maximize {
-           
-            transform: translateY(-5px); /* Move up by 5px */
-        }
-        
-        .window-controls .close {
-           
-            transform: translateY(-5px); /* Move up by 5px */
-        }
+     
         
         
         .window-controls span:hover {
