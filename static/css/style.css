@@ -43,32 +43,34 @@
     margin: 5px auto;
 }
 /* </Icon Styles> */
-        /* <Taskbar Styles> */
-        #taskbar {
-            height: 40px;
-            background-color: rgba(45, 45, 45, 0.8);
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            backdrop-filter: blur(10px);
-        }
-        #start-button {
-            width: 40px;
-            height: 40px;
-            background-color: rgba(56, 56, 56, 0.8);
-            margin-right: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s ease-in-out;
-        }
-        #start-button:hover {
-            background-color: rgba(77, 77, 77, 0.8);
-        }
-        /* </Taskbar Styles> */
+       /* <Taskbar Styles> */
+#taskbar {
+    height: 40px;
+    background-color: rgba(45, 45, 45, 0.8);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    z-index: 999; /* Add this line to ensure taskbar is above start menu */
+}
+#start-button {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(56, 56, 56, 0.8);
+    margin-right: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease-in-out;
+    z-index: 1000; /* Add this line to ensure start button is above everything */
+}
+#start-button:hover {
+    background-color: rgba(77, 77, 77, 0.8);
+}
+/* </Taskbar Styles> */
 
         /* <Context Menu Styles> */
         #context-menu {
@@ -94,28 +96,29 @@
         /* </Context Menu Styles> */
 
      /* <Start Menu Styles> */
-#start-menu {
-    position: absolute;
-    bottom: 40px;
-    left: 0;
-    width: 300px;
-    height: 400px;
-    background-color: rgba(45, 45, 45, 0.8);
-    display: none;
-    color: white;
-    padding: 10px;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-    z-index: 1000;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #4d4d4d #2d2d2d;
-    backdrop-filter: blur(10px);
-    border-radius: 5px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transform-origin: bottom left;
-    transition: transform 0.3s ease-out;
-    transform: translateY(100%);
-}
+     #start-menu {
+        position: absolute;
+        bottom: 40px; /* This remains the same */
+        left: 0;
+        width: 300px;
+        height: 400px;
+        background-color: rgba(45, 45, 45, 0.8);
+        display: none;
+        color: white;
+        padding: 10px;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        z-index: 998; /* Changed from 1000 to 998 */
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #4d4d4d #2d2d2d;
+        backdrop-filter: blur(10px);
+        border-radius: 5px 5px 0 0; /* Changed to round only top corners */
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: none; /* Remove bottom border */
+        transform-origin: bottom left;
+        transition: transform 0.3s ease-out;
+        transform: translateY(calc(100% + 40px)); /* Changed to account for taskbar height */
+    }
 #start-menu.active {
     transform: translateY(0);
     display: block;
