@@ -16,11 +16,17 @@ function bringToFront(window) {
     highestZIndex++;
     window.style.zIndex = highestZIndex;
     
-    // Remove 'active' class from all windows
+    // Remove 'active' class from all windows and taskbar items
     document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
+    document.querySelectorAll('.taskbar-item').forEach(t => t.classList.remove('active'));
     
-    // Add 'active' class to the focused window
+    // Add 'active' class to the focused window and its taskbar item
     window.classList.add('active');
+    const app = window.getAttribute('data-app');
+    const taskbarItem = document.querySelector(`.taskbar-item[data-app="${app}"]`);
+    if (taskbarItem) {
+        taskbarItem.classList.add('active');
+    }
 }
 
 
@@ -483,6 +489,7 @@ function initializeTaskbar() {
                         setTimeout(() => {
                             appWindow.style.display = 'none';
                             appWindow.classList.remove('minimizing');
+                            taskbarItem.classList.remove('active');
                         }, 300);
                     } else {
                         // Bring window to front if it's not active
