@@ -439,10 +439,10 @@ function initializeTaskbar() {
 
     function updateDateTime() {
         const now = new Date();
-        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const timeString = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
         const dateString = now.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
         
-        datetimeDiv.innerHTML = `<span class="time">${timeString}</span><span class="date">${dateString}</span>`;
+        datetimeDiv.innerHTML = `<div class="time">${timeString}</div><div class="date">${dateString}</div>`;
     }
 
     // Call updateDateTime immediately and set interval
