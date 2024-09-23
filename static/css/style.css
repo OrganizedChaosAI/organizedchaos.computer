@@ -311,15 +311,15 @@
         }
         
         .window-controls .minimize {
-            font-size: 24px;
+            font-size: 30px;
         }
         
         .window-controls .maximize {
-            font-size: 14px;
+            font-size: 20px;
         }
         
         .window-controls .close {
-            font-size: 20px;
+            font-size: 22px;
         }
         
         .window-controls span:hover {
