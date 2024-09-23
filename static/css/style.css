@@ -282,6 +282,7 @@
         .window-header {
             background-color: rgba(56, 56, 56, 0.8);
             height: 45px; /* Adjust this value as needed */
+            padding-left: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -306,21 +307,15 @@
             width: 46px;
             cursor: pointer;
             transition: background-color 0.2s ease-in-out;
-            font-size: 16px;
+            font-size: 24px;
             font-weight: bold;
         }
         
         .window-controls .minimize {
-            font-size: 30px;
+            font-size: 34px;
         }
         
-        .window-controls .maximize {
-            font-size: 20px;
-        }
         
-        .window-controls .close {
-            font-size: 22px;
-        }
         
         .window-controls span:hover {
             background-color: rgba(255, 255, 255, 0.1);
