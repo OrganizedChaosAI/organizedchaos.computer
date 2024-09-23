@@ -83,7 +83,7 @@
 
         /* <Window Management> */
         function openWindow(name) {
-            const existingWindow = document.querySelector(`.window[data-app="${name}"]`);
+            let existingWindow = document.querySelector(`.window[data-app="${name}"]`);
             if (existingWindow) {
                 existingWindow.style.display = 'block';
                 return;
@@ -114,7 +114,7 @@
             makeDraggable(window);
         
             window.querySelector('.close').addEventListener('click', () => {
-                window.style.display = 'none';
+                window.remove();
                 const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
                 if (taskbarItem) {
                     taskbarItem.remove();
@@ -138,7 +138,6 @@
             initializeAppFunctionality(name, window);
             
             // Create taskbar item for the new window
-            const taskbarManagement = initializeTaskbar();
             taskbarManagement.createTaskbarItem(name);
         }
 
