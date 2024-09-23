@@ -279,13 +279,20 @@
             height: calc(100% - 35px);
         }
         .window-controls span {
-            margin-left: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            margin-left: 5px;
             cursor: pointer;
-            transition: color 0.2s ease-in-out;
-            font-size: 16px;
+            transition: background-color 0.2s ease-in-out;
+            border-radius: 50%;
+            font-size: 18px;
         }
+        
         .window-controls span:hover {
-            color: #ddd;
+            background-color: rgba(255, 255, 255, 0.2);
         }
         /* </Window Styles> */
 

@@ -454,6 +454,7 @@ function initializeTaskbar() {
                 const appWindow = document.querySelector(`.window[data-app="${app}"]`);
                 if (appWindow) {
                     if (appWindow.style.display === 'none') {
+                        // Maximize the window
                         const rect = taskbarItem.getBoundingClientRect();
                         appWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
                         appWindow.style.transform = 'scale(0.1)';
@@ -465,15 +466,28 @@ function initializeTaskbar() {
                             appWindow.style.transform = 'scale(1)';
                             appWindow.style.opacity = '1';
                         });
-                
+        
                         appWindow.addEventListener('transitionend', function handler() {
                             appWindow.classList.remove('maximizing');
                             appWindow.style.transform = '';
                             appWindow.style.opacity = '';
                             appWindow.removeEventListener('transitionend', handler);
                         });
+                        bringToFront(appWindow);
+                    } else if (appWindow.classList.contains('active')) {
+                        // Minimize the window if it's active
+                        const rect = appWindow.getBoundingClientRect();
+                        const taskbarRect = taskbarItem.getBoundingClientRect();
+                        appWindow.style.transformOrigin = `${taskbarRect.left - rect.left}px ${taskbarRect.top - rect.top}px`;
+                        appWindow.classList.add('minimizing');
+                        setTimeout(() => {
+                            appWindow.style.display = 'none';
+                            appWindow.classList.remove('minimizing');
+                        }, 300);
+                    } else {
+                        // Bring window to front if it's not active
+                        bringToFront(appWindow);
                     }
-                    bringToFront(appWindow);
                 }
             }
         });
