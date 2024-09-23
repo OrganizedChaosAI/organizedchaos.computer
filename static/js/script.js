@@ -113,10 +113,17 @@ function openWindow(name) {
             const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
             const rect = taskbarItem.getBoundingClientRect();
             existingWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
-            existingWindow.style.display = 'block';
+            existingWindow.style.transform = 'scale(0.1)';
+            existingWindow.style.opacity = '0';
             existingWindow.classList.add('maximizing');
+            requestAnimationFrame(() => {
+                existingWindow.style.transform = 'scale(1)';
+                existingWindow.style.opacity = '1';
+            });
             setTimeout(() => {
                 existingWindow.classList.remove('maximizing');
+                existingWindow.style.transform = '';
+                existingWindow.style.opacity = '';
             }, 300);
         }
         bringToFront(existingWindow);
@@ -182,7 +189,7 @@ window.querySelector('.minimize').addEventListener('click', (e) => {
 
 
 
-/*
+
     
     window.querySelector('.maximize').addEventListener('click', () => {
         if (window.style.width === '100%') {
@@ -197,7 +204,7 @@ window.querySelector('.minimize').addEventListener('click', (e) => {
             window.style.left = '0';
         }
     });
-*/
+
     initializeAppFunctionality(name, window);
     
     if (taskbarManagement) {
@@ -449,10 +456,17 @@ function initializeTaskbar() {
                     if (appWindow.style.display === 'none') {
                         const rect = taskbarItem.getBoundingClientRect();
                         appWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
-                        appWindow.style.display = 'block';
+                        appWindow.style.transform = 'scale(0.1)';
+                        appWindow.style.opacity = '0';
                         appWindow.classList.add('maximizing');
+                        requestAnimationFrame(() => {
+                            appWindow.style.transform = 'scale(1)';
+                            appWindow.style.opacity = '1';
+                        });
                         setTimeout(() => {
                             appWindow.classList.remove('maximizing');
+                            appWindow.style.transform = '';
+                            appWindow.style.opacity = '';
                         }, 300);
                     }
                     bringToFront(appWindow);
