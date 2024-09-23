@@ -163,9 +163,8 @@ function openWindow(name) {
 
     window.querySelector('.close').addEventListener('click', () => {
         window.remove();
-        const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
-        if (taskbarItem) {
-            taskbarItem.remove();
+        if (taskbarManagement && taskbarManagement.removeWindow) {
+            taskbarManagement.removeWindow(name);
         }
     });
 
@@ -494,6 +493,14 @@ function initializeTaskbar() {
         taskbar.appendChild(taskbarItem);
     }
 
+    function removeWindow(app) {
+        openWindows.delete(app);
+        const taskbarItem = document.querySelector(`.taskbar-item[data-app="${app}"]`);
+        if (taskbarItem) {
+            taskbarItem.remove();
+        }
+    }
+
     // Observe desktop for changes to update taskbar
     const desktopObserver = new MutationObserver(() => {
         const currentWindows = document.querySelectorAll('.window');
@@ -506,7 +513,7 @@ function initializeTaskbar() {
     });
     desktopObserver.observe(desktop, { childList: true });
 
-    return { createTaskbarItem };
+    return { createTaskbarItem, removeWindow };
 }
 /* </Taskbar Management> */
 
