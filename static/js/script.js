@@ -458,16 +458,20 @@ function initializeTaskbar() {
                         appWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
                         appWindow.style.transform = 'scale(0.1)';
                         appWindow.style.opacity = '0';
-                        appWindow.classList.add('maximizing');
+                        appWindow.style.display = 'block';
+                        
                         requestAnimationFrame(() => {
+                            appWindow.classList.add('maximizing');
                             appWindow.style.transform = 'scale(1)';
                             appWindow.style.opacity = '1';
                         });
-                        setTimeout(() => {
+                
+                        appWindow.addEventListener('transitionend', function handler() {
                             appWindow.classList.remove('maximizing');
                             appWindow.style.transform = '';
                             appWindow.style.opacity = '';
-                        }, 300);
+                            appWindow.removeEventListener('transitionend', handler);
+                        });
                     }
                     bringToFront(appWindow);
                 }
