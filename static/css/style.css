@@ -281,7 +281,7 @@
         }
         .window-header {
             background-color: rgba(56, 56, 56, 0.8);
-            height: 100px; /* Adjust this value as needed */
+            height: 45px; /* Adjust this value as needed */
             display: flex;
             justify-content: space-between;
             align-items: center;
