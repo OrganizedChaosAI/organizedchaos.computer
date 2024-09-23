@@ -159,41 +159,30 @@ function openWindow(name) {
     makeDraggable(window);
     bringToFront(window);
 
-
     window.addEventListener('mousedown', () => bringToFront(window));
 
     window.querySelector('.close').addEventListener('click', () => {
         window.remove();
-        if (taskbarManagement) {
-            const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
-            if (taskbarItem) {
-                taskbarItem.remove();
-            }
+        const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
+        if (taskbarItem) {
+            taskbarItem.remove();
         }
     });
 
+    window.querySelector('.minimize').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const rect = window.getBoundingClientRect();
+        const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
+        const taskbarRect = taskbarItem.getBoundingClientRect();
 
-//Begin new minimize 
+        window.style.transformOrigin = `${taskbarRect.left - rect.left}px ${taskbarRect.top - rect.top}px`;
 
-window.querySelector('.minimize').addEventListener('click', (e) => {
-    e.stopPropagation();
-    const rect = window.getBoundingClientRect();
-    const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
-    const taskbarRect = taskbarItem.getBoundingClientRect();
-
-    window.style.transformOrigin = `${taskbarRect.left - rect.left}px ${taskbarRect.top - rect.top}px`;
-
-    window.classList.add('minimizing');
-    setTimeout(() => {
-        window.style.display = 'none';
-        window.classList.remove('minimizing');
-    }, 300);
-});
-//End new minimize
-
-
-
-
+        window.classList.add('minimizing');
+        setTimeout(() => {
+            window.style.display = 'none';
+            window.classList.remove('minimizing');
+        }, 300);
+    });
     
     window.querySelector('.maximize').addEventListener('click', () => {
         if (window.style.width === '100%') {
@@ -211,10 +200,8 @@ window.querySelector('.minimize').addEventListener('click', (e) => {
 
     initializeAppFunctionality(name, window);
     
-    if (taskbarManagement) {
-        taskbarManagement.createTaskbarItem(name);
-    }
-    bringToFront(window); 
+    createTaskbarItem(name);
+    bringToFront(window);
 }
 
 function getWindowContent(name) {
@@ -432,8 +419,6 @@ function initializeTaskbar() {
     const taskbar = document.getElementById('taskbar');
     const openWindows = new Set();
 
-
-
     const datetimeDiv = document.createElement('div');
     datetimeDiv.id = 'datetime';
     taskbar.appendChild(datetimeDiv);
@@ -446,12 +431,8 @@ function initializeTaskbar() {
         datetimeDiv.innerHTML = `<div class="time">${timeString}</div><div class="date">${dateString}</div>`;
     }
 
-    // Call updateDateTime immediately and set interval
     updateDateTime();
     setInterval(updateDateTime, 1000);
-
-
-
 
     function createTaskbarItem(app) {
         if (openWindows.has(app)) return;
@@ -461,21 +442,18 @@ function initializeTaskbar() {
         taskbarItem.className = 'taskbar-item';
         taskbarItem.setAttribute('data-app', app);
         
-        // Use the SVG icon from the start menu
         const startMenuItem = document.querySelector(`.start-menu-item[data-app="${app}"]`);
         const svgIcon = startMenuItem ? startMenuItem.querySelector('svg').cloneNode(true) : '';
         
         taskbarItem.innerHTML = `
             ${svgIcon.outerHTML || ''}
             <span>${app}</span>
-            
         `;
         
         taskbarItem.addEventListener('click', () => {
             const appWindow = document.querySelector(`.window[data-app="${app}"]`);
             if (appWindow) {
                 if (appWindow.style.display === 'none') {
-                    // Maximize the window
                     const rect = taskbarItem.getBoundingClientRect();
                     appWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
                     appWindow.style.transform = 'scale(0.1)';
@@ -496,7 +474,6 @@ function initializeTaskbar() {
                     });
                     bringToFront(appWindow);
                 } else if (appWindow.classList.contains('active')) {
-                    // Minimize the window if it's active
                     const rect = appWindow.getBoundingClientRect();
                     const taskbarRect = taskbarItem.getBoundingClientRect();
                     appWindow.style.transformOrigin = `${taskbarRect.left - rect.left}px ${taskbarRect.top - rect.top}px`;
@@ -507,7 +484,6 @@ function initializeTaskbar() {
                         taskbarItem.classList.remove('active');
                     }, 300);
                 } else {
-                    // Bring window to front if it's not active
                     bringToFront(appWindow);
                 }
             }
@@ -516,25 +492,6 @@ function initializeTaskbar() {
         taskbar.appendChild(taskbarItem);
     }
 
-    function toggleWindow(app) {
-        const appWindow = document.querySelector(`.window[data-app="${app}"]`);
-        if (appWindow) {
-            if (appWindow.style.display === 'none') {
-                appWindow.style.display = 'block';
-            } else {
-                appWindow.style.display = 'none';
-            }
-        }
-    }
-
-    function closeWindow(app) {
-        const appWindow = document.querySelector(`.window[data-app="${app}"]`);
-        if (appWindow) {
-            appWindow.remove();
-        }
-    }
-
-    // Observe desktop for changes to update taskbar
     const desktopObserver = new MutationObserver(() => {
         const currentWindows = document.querySelectorAll('.window');
         currentWindows.forEach(window => {
@@ -546,7 +503,7 @@ function initializeTaskbar() {
     });
     desktopObserver.observe(desktop, { childList: true });
 
-    return { createTaskbarItem, toggleWindow, closeWindow };
+    return { createTaskbarItem };
 }
 /* </Taskbar Management> */
 
