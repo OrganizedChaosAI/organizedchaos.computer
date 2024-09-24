@@ -44,7 +44,8 @@ function bringToFront(window) {
 
 /* <Desktop Management> */
 function initializeDesktop() {
-    icons.forEach(icon => createIcon(icon.name, icon.x, icon.y, icon.svg));
+    const desktopIcons = icons.filter(icon => icon.x !== undefined && icon.y !== undefined);
+    desktopIcons.forEach(icon => createIcon(icon.name, icon.x, icon.y, icon.svg));
 }
 
 function createIcon(name, x, y, svg) {
@@ -93,10 +94,13 @@ function openTextFileEditor(name) {
 
 /* <Draggable - Resize Functionality> */
 function makeDraggable(element) {
+    const header = element.querySelector('.window-header');
+    if (!header) return;
+
     let isDragging = false;
     let startX, startY;
 
-    element.addEventListener('mousedown', initDrag);
+    header.addEventListener('mousedown', initDrag);
 
     function initDrag(e) {
         isDragging = true;
