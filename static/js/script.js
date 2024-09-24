@@ -9,23 +9,6 @@ let taskbarManagement;
 let highestZIndex = 1000;
 /* </Global Variables> */
 
-function bringToFront(window) {
-    highestZIndex++;
-    window.style.zIndex = highestZIndex;
-    
-    // Remove 'active' class from all windows and taskbar items
-    document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
-    document.querySelectorAll('.taskbar-item').forEach(t => t.classList.remove('active'));
-    
-    // Add 'active' class to the focused window and its taskbar item
-    window.classList.add('active');
-    const app = window.getAttribute('data-app');
-    const taskbarItem = document.querySelector(`.taskbar-item[data-app="${app}"]`);
-    if (taskbarItem) {
-        taskbarItem.classList.add('active');
-    }
-}
-
 /* <Icon Data> */
 let icons = [
     { name: 'My Computer', x: 20, y: 20, svg: '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 12H3V4h18v10z"/></svg>' },
@@ -33,6 +16,21 @@ let icons = [
     { name: 'My Documents', x: 20, y: 200, svg: '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/></svg>' }
 ];
 /* </Icon Data> */
+
+function bringToFront(window) {
+    highestZIndex++;
+    window.style.zIndex = highestZIndex;
+    
+    document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
+    document.querySelectorAll('.taskbar-item').forEach(t => t.classList.remove('active'));
+    
+    window.classList.add('active');
+    const app = window.getAttribute('data-app');
+    const taskbarItem = document.querySelector(`.taskbar-item[data-app="${app}"]`);
+    if (taskbarItem) {
+        taskbarItem.classList.add('active');
+    }
+}
 
 /* <Desktop Management> */
 function initializeDesktop() {
@@ -62,23 +60,24 @@ function createNewFolder() {
     icons.push({ name, x, y, svg });
 }
 
-function createTextFile(folderIcon) {
-    const name = prompt('Enter text file name:');
-    if (name) {
-        const content = prompt('Enter file content:');
-        const fileIcon = document.createElement('div');
-        fileIcon.className = 'icon';
-        fileIcon.innerHTML = `
-            <div class="icon-image">
-                <svg viewBox="0 0 24 24" width="32" height="32">
-                    <path fill="#fff" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-                </svg>
-            </div>
-            <div>${name}</div>
-        `;
-        fileIcon.addEventListener('dblclick', () => alert(content));
-        folderIcon.appendChild(fileIcon);
-    }
+function createTextFile(x, y) {
+    const name = 'New File.txt';
+    const svg = '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>';
+    const icon = createIcon(name, x, y, svg);
+    icon.addEventListener('dblclick', () => openTextFileEditor(name));
+    icons.push({ name, x, y, svg });
+}
+
+function openTextFileEditor(name) {
+    const content = localStorage.getItem(name) || '';
+    const window = createWindow(name, 'text-editor');
+    window.querySelector('.window-content').innerHTML = `
+        <textarea style="width: 100%; height: 100%; resize: none;">${content}</textarea>
+    `;
+    const textarea = window.querySelector('textarea');
+    textarea.addEventListener('input', () => {
+        localStorage.setItem(name, textarea.value);
+    });
 }
 /* </Desktop Management> */
 
@@ -162,26 +161,29 @@ function openWindow(name) {
     let existingWindow = document.querySelector(`.window[data-app="${name}"]`);
     if (existingWindow) {
         if (existingWindow.style.display === 'none') {
-            const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
-            const rect = taskbarItem.getBoundingClientRect();
-            existingWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
-            existingWindow.style.transform = 'scale(0.1)';
-            existingWindow.style.opacity = '0';
-            existingWindow.classList.add('maximizing');
-            requestAnimationFrame(() => {
-                existingWindow.style.transform = 'scale(1)';
-                existingWindow.style.opacity = '1';
-            });
-            setTimeout(() => {
-                existingWindow.classList.remove('maximizing');
-                existingWindow.style.transform = '';
-                existingWindow.style.opacity = '';
-            }, 300);
+            existingWindow.style.display = 'block';
         }
         bringToFront(existingWindow);
         return;
     }
 
+    const window = createWindow(name);
+    desktop.appendChild(window);
+    window.style.display = 'block';
+    makeDraggable(window);
+    makeResizable(window);
+    bringToFront(window);
+
+    window.addEventListener('mousedown', () => bringToFront(window));
+
+    initializeAppFunctionality(name, window);
+    
+    if (taskbarManagement && taskbarManagement.createTaskbarItem) {
+        taskbarManagement.createTaskbarItem(name);
+    }
+}
+
+function createWindow(name, type = 'default') {
     const icon = icons.find(icon => icon.name === name);
     const window = document.createElement('div');
     window.className = 'window';
@@ -201,16 +203,9 @@ function openWindow(name) {
             </div>
         </div>
         <div class="window-content">
-            ${getWindowContent(name)}
+            ${getWindowContent(name, type)}
         </div>
     `;
-    desktop.appendChild(window);
-    window.style.display = 'block';
-    makeDraggable(window.querySelector('.window-header'));
-    makeResizable(window);
-    bringToFront(window);
-
-    window.addEventListener('mousedown', () => bringToFront(window));
 
     window.querySelector('.close').addEventListener('click', () => {
         window.remove();
@@ -219,19 +214,8 @@ function openWindow(name) {
         }
     });
 
-    window.querySelector('.minimize').addEventListener('click', (e) => {
-        e.stopPropagation();
-        const rect = window.getBoundingClientRect();
-        const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
-        const taskbarRect = taskbarItem.getBoundingClientRect();
-
-        window.style.transformOrigin = `${taskbarRect.left - rect.left}px ${taskbarRect.top - rect.top}px`;
-
-        window.classList.add('minimizing');
-        setTimeout(() => {
-            window.style.display = 'none';
-            window.classList.remove('minimizing');
-        }, 300);
+    window.querySelector('.minimize').addEventListener('click', () => {
+        window.style.display = 'none';
     });
     
     window.querySelector('.maximize').addEventListener('click', () => {
@@ -248,77 +232,71 @@ function openWindow(name) {
         }
     });
 
-    initializeAppFunctionality(name, window);
-    
-    if (taskbarManagement && taskbarManagement.createTaskbarItem) {
-        taskbarManagement.createTaskbarItem(name);
-    }
-    bringToFront(window);
+    return window;
 }
 
-function getWindowContent(name) {
-    switch (name.toLowerCase()) {
-        case 'today':
-            return `
-                <div class="calendar">
-                    <div class="calendar-header">May 2023</div>
-                    ${generateCalendar()}
-                </div>
-            `;
-        case 'chat':
-            return `
-                <div class="chat-messages"></div>
-                <div class="chat-input">
-                    <input type="text" placeholder="Type a message...">
-                    <button>Send</button>
-                </div>
-            `;
-        case 'art':
-            return '<canvas class="art-canvas" width="350" height="250"></canvas>';
-        case 'academy':
-            return `
-                <h2>Welcome to the Academy</h2>
-                <p>Start learning today!</p>
-                <select id="course-select">
-                    <option value="">Select a course</option>
-                    <option value="math">Mathematics</option>
-                    <option value="science">Science</option>
-                    <option value="history">History</option>
-                </select>
-                <div id="course-content"></div>
-            `;
-        case 'work':
-            return `
-                <h2>Work Dashboard</h2>
-                <div id="task-list">
-                    <h3>Your tasks for today:</h3>
-                    <ul>
-                        <li>Complete project proposal</li>
-                        <li>Review team progress</li>
-                        <li>Schedule client meeting</li>
-                    </ul>
-                </div>
-                <button id="add-task">Add New Task</button>
-            `;
-        case 'fun':
-            return `
-                <h2>Fun Zone</h2>
-                <p>Choose a game to play:</p>
-                <ul id="game-list">
-                    <li><button class="game-button" data-game="tictactoe">Tic Tac Toe</button></li>
-                    <li><button class="game-button" data-game="snake">Snake</button></li>
-                    <li><button class="game-button" data-game="tetris">Tetris</button></li>
-                </ul>
-                <div id="game-area"></div>
-            `;
-        case 'new folder':
-            return `
-                <h2>New Folder</h2>
-                <button id="create-text-file">Create Text File</button>
-                <div id="folder-contents"></div>
-            `;
+function getWindowContent(name, type) {
+    switch (type) {
+        case 'text-editor':
+            return '<textarea style="width: 100%; height: 100%; resize: none;"></textarea>';
         default:
-            return `Content for ${name}`;
+            switch (name.toLowerCase()) {
+                case 'today':
+                    return `
+                        <div class="calendar">
+                            <div class="calendar-header">May 2023</div>
+                            ${generateCalendar()}
+                        </div>
+                    `;
+                case 'chat':
+                    return `
+                        <div class="chat-messages"></div>
+                        <div class="chat-input">
+                            <input type="text" placeholder="Type a message...">
+                            <button>Send</button>
+                        </div>
+                    `;
+                case 'art':
+                    return '<canvas class="art-canvas" width="350" height="250"></canvas>';
+                case 'academy':
+                    return `
+                        <h2>Welcome to the Academy</h2>
+                        <p>Start learning today!</p>
+                        <select id="course-select">
+                            <option value="">Select a course</option>
+                            <option value="math">Mathematics</option>
+                            <option value="science">Science</option>
+                            <option value="history">History</option>
+                        </select>
+                        <div id="course-content"></div>
+                    `;
+                case 'work':
+                    return `
+                        <h2>Work Dashboard</h2>
+                        <div id="task-list">
+                            <h3>Your tasks for today:</h3>
+                            <ul>
+                                <li>Complete project proposal</li>
+                                <li>Review team progress</li>
+                                <li>Schedule client meeting</li>
+                            </ul>
+                        </div>
+                        <button id="add-task">Add New Task</button>
+                    `;
+                case 'fun':
+                    return `
+                        <h2>Fun Zone</h2>
+                        <p>Choose a game to play:</p>
+                        <ul id="game-list">
+                            <li><button class="game-button" data-game="tictactoe">Tic Tac Toe</button></li>
+                            <li><button class="game-button" data-game="snake">Snake</button></li>
+                            <li><button class="game-button" data-game="tetris">Tetris</button></li>
+                        </ul>
+                        <div id="game-area"></div>
+                    `;
+                default:
+                    return `Content for ${name}`;
+            }
     }
 }
 /* </Window Management> */
@@ -343,9 +321,6 @@ function initializeAppFunctionality(name, window) {
             break;
         case 'fun':
             initializeFunApp(window);
-            break;
-        case 'new folder':
-            initializeNewFolderApp(window);
             break;
         default:
             console.log(`No specific initialization for ${name}`);
@@ -473,28 +448,6 @@ function initializeFunApp(window) {
         });
     });
 }
-
-function initializeNewFolderApp(window) {
-    const createTextFileButton = window.querySelector('#create-text-file');
-    const folderContents = window.querySelector('#folder-contents');
-
-    createTextFileButton.addEventListener('click', () => {
-        const fileName = prompt('Enter file name:');
-        if (fileName) {
-            const fileContent = prompt('Enter file content:');
-            const fileElement = document.createElement('div');
-            fileElement.className = 'file-item';
-            fileElement.innerHTML = `
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                    <path fill="#fff" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-                </svg>
-                <span>${fileName}</span>
-            `;
-            fileElement.addEventListener('dblclick', () => alert(fileContent));
-            folderContents.appendChild(fileElement);
-        }
-    });
-}
 /* </Application Functionality> */
 
 /* <Taskbar Management> */
@@ -537,35 +490,10 @@ function initializeTaskbar() {
             const appWindow = document.querySelector(`.window[data-app="${app}"]`);
             if (appWindow) {
                 if (appWindow.style.display === 'none') {
-                    const rect = taskbarItem.getBoundingClientRect();
-                    appWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
-                    appWindow.style.transform = 'scale(0.1)';
-                    appWindow.style.opacity = '0';
                     appWindow.style.display = 'block';
-                    
-                    requestAnimationFrame(() => {
-                        appWindow.classList.add('maximizing');
-                        appWindow.style.transform = 'scale(1)';
-                        appWindow.style.opacity = '1';
-                    });
-        
-                    appWindow.addEventListener('transitionend', function handler() {
-                        appWindow.classList.remove('maximizing');
-                        appWindow.style.transform = '';
-                        appWindow.style.opacity = '';
-                        appWindow.removeEventListener('transitionend', handler);
-                    });
                     bringToFront(appWindow);
                 } else if (appWindow.classList.contains('active')) {
-                    const rect = appWindow.getBoundingClientRect();
-                    const taskbarRect = taskbarItem.getBoundingClientRect();
-                    appWindow.style.transformOrigin = `${taskbarRect.left - rect.left}px ${taskbarRect.top - rect.top}px`;
-                    appWindow.classList.add('minimizing');
-                    setTimeout(() => {
-                        appWindow.style.display = 'none';
-                        appWindow.classList.remove('minimizing');
-                        taskbarItem.classList.remove('active');
-                    }, 300);
+                    appWindow.style.display = 'none';
                 } else {
                     bringToFront(appWindow);
                 }
@@ -605,6 +533,20 @@ function showContextMenu(e) {
     contextMenu.style.display = 'block';
     contextMenu.style.left = `${e.clientX}px`;
     contextMenu.style.top = `${e.clientY}px`;
+    
+    // Clear previous menu items
+    contextMenu.innerHTML = '';
+    
+    // Add "New Text File" option
+    const newTextFileOption = document.createElement('div');
+    newTextFileOption.textContent = 'New Text File';
+    newTextFileOption.addEventListener('click', () => {
+        createTextFile(e.clientX, e.clientY);
+        hideContextMenu();
+    });
+    contextMenu.appendChild(newTextFileOption);
+    
+    // Add other context menu options here
 }
 
 function hideContextMenu() {
@@ -626,16 +568,16 @@ function toggleStartMenu() {
 function initializeStartMenuItems() {
     const startMenuItems = startMenu.querySelectorAll('.start-menu-item');
     startMenuItems.forEach(item => {
-        const icon = item.querySelector('.start-menu-icon');
-        item.addEventListener('mouseover', () => {
-            icon.style.transform = 'scale(1.1)';
-            icon.style.transition = 'transform 0.3s ease-in-out';
-        });
-        item.addEventListener('mouseout', () => {
-            icon.style.transform = 'scale(1)';
-        });
+        const app = item.getAttribute('data-app');
+        const icon = icons.find(icon => icon.name.toLowerCase() === app.toLowerCase());
+        if (icon) {
+            item.innerHTML = `
+                ${icon.svg}
+                <span>${app}</span>
+            `;
+        }
+        
         item.addEventListener('click', () => {
-            const app = item.getAttribute('data-app');
             openWindow(app);
             toggleStartMenu();
         });
@@ -712,7 +654,7 @@ document.addEventListener('DOMContentLoaded', () => {
     desktop.addEventListener('drop', preventDefaultDragBehavior);
     
     desktop.addEventListener('contextmenu', showContextMenu);
-    desktop.addEventListener('click', hideContextMenu);
+    document.addEventListener('click', hideContextMenu);
     document.getElementById('new-folder').addEventListener('click', createNewFolder);
     document.getElementById('refresh').addEventListener('click', () => {
         desktop.innerHTML = '';
