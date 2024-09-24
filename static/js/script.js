@@ -1,4 +1,3 @@
-
 /* <JS> */
 
 /* <Global Variables> */
@@ -9,8 +8,6 @@ const startMenu = document.getElementById('start-menu');
 let taskbarManagement;
 let highestZIndex = 1000;
 /* </Global Variables> */
-
-
 
 function bringToFront(window) {
     highestZIndex++;
@@ -28,7 +25,6 @@ function bringToFront(window) {
         taskbarItem.classList.add('active');
     }
 }
-
 
 /* <Icon Data> */
 let icons = [
@@ -53,7 +49,7 @@ function createIcon(name, x, y, svg) {
         <div>${name}</div>
     `;
     icon.addEventListener('dblclick', () => openWindow(name));
-    
+    makeDraggable(icon);
     desktop.appendChild(icon);
 }
 
@@ -66,31 +62,32 @@ function createNewFolder() {
     icons.push({ name, x, y, svg });
 }
 
-function createCustomIcon() {
-    const name = prompt('Enter icon name:');
+function createTextFile(folderIcon) {
+    const name = prompt('Enter text file name:');
     if (name) {
-        const x = Math.random() * (desktop.clientWidth - 70);
-        const y = Math.random() * (desktop.clientHeight - 70);
-        const color = getRandomColor();
-        const svg = `<svg viewBox="0 0 24 24" width="32" height="32"><rect width="24" height="24" fill="${color}" /></svg>`;
-        createIcon(name, x, y, svg);
-        icons.push({ name, x, y, svg });
+        const content = prompt('Enter file content:');
+        const fileIcon = document.createElement('div');
+        fileIcon.className = 'icon';
+        fileIcon.innerHTML = `
+            <div class="icon-image">
+                <svg viewBox="0 0 24 24" width="32" height="32">
+                    <path fill="#fff" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                </svg>
+            </div>
+            <div>${name}</div>
+        `;
+        fileIcon.addEventListener('dblclick', () => alert(content));
+        folderIcon.appendChild(fileIcon);
     }
 }
 /* </Desktop Management> */
 
 /* <Draggable - Resize Functionality> */
 function makeDraggable(element) {
-    const header = element.querySelector('.window-header');
-    if (!header) {
-        console.warn('No .window-header found for draggable element:', element);
-        return; // Exit the function if there's no header
-    }
-
     let isDragging = false;
     let startX, startY;
 
-    header.addEventListener('mousedown', initDrag);
+    element.addEventListener('mousedown', initDrag);
 
     function initDrag(e) {
         isDragging = true;
@@ -116,6 +113,7 @@ function makeDraggable(element) {
         document.removeEventListener('mouseup', stopDrag);
     }
 }
+
 function makeResizable(element) {
     const handles = ['right', 'bottom', 'corner'];
     const minWidth = 200;
@@ -184,6 +182,7 @@ function openWindow(name) {
         return;
     }
 
+    const icon = icons.find(icon => icon.name === name);
     const window = document.createElement('div');
     window.className = 'window';
     window.setAttribute('data-app', name);
@@ -193,6 +192,7 @@ function openWindow(name) {
     window.style.top = '100px';
     window.innerHTML = `
         <div class="window-header">
+            ${icon ? icon.svg : ''}
             <span>${name}</span>
             <div class="window-controls">
                 <span class="minimize">-</span>
@@ -206,7 +206,7 @@ function openWindow(name) {
     `;
     desktop.appendChild(window);
     window.style.display = 'block';
-    makeDraggable(window);
+    makeDraggable(window.querySelector('.window-header'));
     makeResizable(window);
     bringToFront(window);
 
@@ -311,6 +311,12 @@ function getWindowContent(name) {
                 </ul>
                 <div id="game-area"></div>
             `;
+        case 'new folder':
+            return `
+                <h2>New Folder</h2>
+                <button id="create-text-file">Create Text File</button>
+                <div id="folder-contents"></div>
+            `;
         default:
             return `Content for ${name}`;
     }
@@ -337,6 +343,9 @@ function initializeAppFunctionality(name, window) {
             break;
         case 'fun':
             initializeFunApp(window);
+            break;
+        case 'new folder':
+            initializeNewFolderApp(window);
             break;
         default:
             console.log(`No specific initialization for ${name}`);
@@ -464,6 +473,28 @@ function initializeFunApp(window) {
         });
     });
 }
+
+function initializeNewFolderApp(window) {
+    const createTextFileButton = window.querySelector('#create-text-file');
+    const folderContents = window.querySelector('#folder-contents');
+
+    createTextFileButton.addEventListener('click', () => {
+        const fileName = prompt('Enter file name:');
+        if (fileName) {
+            const fileContent = prompt('Enter file content:');
+            const fileElement = document.createElement('div');
+            fileElement.className = 'file-item';
+            fileElement.innerHTML = `
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="#fff" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                </svg>
+                <span>${fileName}</span>
+            `;
+            fileElement.addEventListener('dblclick', () => alert(fileContent));
+            folderContents.appendChild(fileElement);
+        }
+    });
+}
 /* </Application Functionality> */
 
 /* <Taskbar Management> */
@@ -494,11 +525,11 @@ function initializeTaskbar() {
         taskbarItem.className = 'taskbar-item';
         taskbarItem.setAttribute('data-app', app);
         
-        const startMenuItem = document.querySelector(`.start-menu-item[data-app="${app}"]`);
-        const svgIcon = startMenuItem ? startMenuItem.querySelector('svg').cloneNode(true) : '';
+        const icon = icons.find(icon => icon.name.toLowerCase() === app.toLowerCase());
+        const svg = icon ? icon.svg : '';
         
         taskbarItem.innerHTML = `
-            ${svgIcon.outerHTML || ''}
+            ${svg}
             <span>${app}</span>
         `;
         
@@ -683,7 +714,6 @@ document.addEventListener('DOMContentLoaded', () => {
     desktop.addEventListener('contextmenu', showContextMenu);
     desktop.addEventListener('click', hideContextMenu);
     document.getElementById('new-folder').addEventListener('click', createNewFolder);
-    document.getElementById('custom-icon').addEventListener('click', createCustomIcon);
     document.getElementById('refresh').addEventListener('click', () => {
         desktop.innerHTML = '';
         icons.forEach(icon => createIcon(icon.name, icon.x, icon.y, icon.svg));
@@ -693,7 +723,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Simulate a system notification after 5 seconds
     setTimeout(simulateSystemNotification, 5000);
-    
 });
 /* </Initialization> */
 
