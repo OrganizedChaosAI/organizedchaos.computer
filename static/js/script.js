@@ -46,6 +46,7 @@ function bringToFront(window) {
 function initializeDesktop() {
     const desktopIcons = icons.filter(icon => icon.x !== undefined && icon.y !== undefined);
     desktopIcons.forEach(icon => createIcon(icon.name, icon.x, icon.y, icon.svg));
+    document.querySelectorAll('.icon').forEach(makeIconDraggable);
 }
 
 function createIcon(name, x, y, svg) {
@@ -58,7 +59,7 @@ function createIcon(name, x, y, svg) {
         <div>${name}</div>
     `;
     icon.addEventListener('dblclick', () => openWindow(name));
-    makeDraggable(icon);
+    makeIconDraggable(icon); // Use the new function here
     desktop.appendChild(icon);
 }
 
@@ -67,7 +68,8 @@ function createNewFolder() {
     const x = Math.random() * (desktop.clientWidth - 70);
     const y = Math.random() * (desktop.clientHeight - 70);
     const svg = '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>';
-    createIcon(name, x, y, svg);
+    const icon = createIcon(name, x, y, svg);
+    makeIconDraggable(icon);
     icons.push({ name, x, y, svg });
 }
 
@@ -710,7 +712,41 @@ function getRandomColor() {
 function preventDefaultDragBehavior(e) {
     e.preventDefault();
 }
+function makeIconDraggable(icon) {
+    let isDragging = false;
+    let startX, startY;
 
+    icon.addEventListener('mousedown', initDrag);
+
+    function initDrag(e) {
+        isDragging = true;
+        startX = e.clientX - icon.offsetLeft;
+        startY = e.clientY - icon.offsetTop;
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDrag);
+    }
+
+    function drag(e) {
+        if (isDragging) {
+            e.preventDefault();
+            const newX = e.clientX - startX;
+            const newY = e.clientY - startY;
+            
+            // Ensure the icon stays within the desktop boundaries
+            const maxX = desktop.clientWidth - icon.offsetWidth;
+            const maxY = desktop.clientHeight - icon.offsetHeight;
+            
+            icon.style.left = `${Math.max(0, Math.min(newX, maxX))}px`;
+            icon.style.top = `${Math.max(0, Math.min(newY, maxY))}px`;
+        }
+    }
+
+    function stopDrag() {
+        isDragging = false;
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', stopDrag);
+    }
+}
 
 /* </Utility Functions> */
 
