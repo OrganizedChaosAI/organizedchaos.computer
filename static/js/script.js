@@ -711,27 +711,7 @@ function preventDefaultDragBehavior(e) {
     e.preventDefault();
 }
 
-function simulateSystemNotification() {
-    const notification = document.createElement('div');
-    notification.style.position = 'absolute';
-    notification.style.right = '10px';
-    notification.style.bottom = '50px';
-    notification.style.backgroundColor = 'rgba(45, 45, 45, 0.9)';
-    notification.style.color = 'white';
-    notification.style.padding = '10px';
-    notification.style.borderRadius = '5px';
-    notification.style.zIndex = '1000';
-    notification.style.backdropFilter = 'blur(10px)';
-    notification.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-    notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
-    notification.style.transition = 'opacity 0.5s ease-in-out';
-    notification.textContent = 'System Notification: Update available';
-    document.body.appendChild(notification);
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => notification.remove(), 500);
-    }, 3000);
-}
+
 /* </Utility Functions> */
 
 /* <Error Handling> */
@@ -772,8 +752,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     startButton.addEventListener('click', toggleStartMenu);
     
-    // Simulate a system notification after 5 seconds
-    setTimeout(simulateSystemNotification, 5000);
+    
 });
 /* </Initialization> */
 
