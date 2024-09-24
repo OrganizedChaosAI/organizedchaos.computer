@@ -13,9 +13,19 @@ let highestZIndex = 1000;
 let icons = [
     { name: 'My Computer', x: 20, y: 20, svg: '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 12H3V4h18v10z"/></svg>' },
     { name: 'Recycle Bin', x: 20, y: 110, svg: '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z"/></svg>' },
-    { name: 'My Documents', x: 20, y: 200, svg: '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/></svg>' }
+    { name: 'My Documents', x: 20, y: 200, svg: '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/></svg>' },
+    { name: 'Chat', svg: '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>' },
+    { name: 'Art', svg: '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>' },
+    { name: 'Today', svg: '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>' },
+    { name: 'Academy', svg: '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>' },
+    { name: 'Work', svg: '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>' },
+    { name: 'Fun', svg: '<svg viewBox="0 0 24 24" width="32" height="32"><path fill="#fff" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>' }
 ];
 /* </Icon Data> */
+
+function getIcon(name) {
+    return icons.find(icon => icon.name.toLowerCase() === name.toLowerCase()) || icons[0]; // Default to first icon if not found
+}
 
 function bringToFront(window) {
     highestZIndex++;
@@ -182,7 +192,7 @@ function openWindow(name) {
         return;
     }
 
-    const icon = icons.find(icon => icon.name.toLowerCase() === name.toLowerCase());
+    const icon = getIcon(name);
     const window = document.createElement('div');
     window.className = 'window';
     window.setAttribute('data-app', name);
@@ -192,7 +202,7 @@ function openWindow(name) {
     window.style.top = '100px';
     window.innerHTML = `
         <div class="window-header">
-            <div class="window-icon">${icon ? icon.svg : ''}</div>
+            <div class="window-icon">${icon.svg}</div>
             <span>${name}</span>
             <div class="window-controls">
                 <span class="minimize">-</span>
@@ -257,7 +267,7 @@ function openWindow(name) {
 }
 
 function createWindow(name, type = 'default') {
-    const icon = icons.find(icon => icon.name === name);
+    const icon = getIcon(name);
     const window = document.createElement('div');
     window.className = 'window';
     window.setAttribute('data-app', name);
@@ -267,7 +277,7 @@ function createWindow(name, type = 'default') {
     window.style.top = '100px';
     window.innerHTML = `
         <div class="window-header">
-            ${icon ? icon.svg : ''}
+            <div class="window-icon">${icon.svg}</div>
             <span>${name}</span>
             <div class="window-controls">
                 <span class="minimize">-</span>
@@ -551,11 +561,10 @@ function initializeTaskbar() {
         taskbarItem.className = 'taskbar-item';
         taskbarItem.setAttribute('data-app', app);
         
-        const icon = icons.find(icon => icon.name.toLowerCase() === app.toLowerCase());
-        const svg = icon ? icon.svg : '';
+        const icon = getIcon(app);
         
         taskbarItem.innerHTML = `
-            <div class="taskbar-icon">${svg}</div>
+            <div class="taskbar-icon">${icon.svg}</div>
             <span>${app}</span>
         `;
         
@@ -667,13 +676,11 @@ function initializeStartMenuItems() {
     const startMenuItems = startMenu.querySelectorAll('.start-menu-item');
     startMenuItems.forEach(item => {
         const app = item.getAttribute('data-app');
-        const icon = icons.find(icon => icon.name.toLowerCase() === app.toLowerCase());
-        if (icon) {
-            item.innerHTML = `
-                ${icon.svg}
-                <span>${app}</span>
-            `;
-        }
+        const icon = getIcon(app);
+        item.innerHTML = `
+            <div class="start-menu-icon">${icon.svg}</div>
+            <span>${app}</span>
+        `;
         
         item.addEventListener('click', () => {
             openWindow(app);
