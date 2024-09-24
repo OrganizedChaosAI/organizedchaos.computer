@@ -192,7 +192,7 @@ function openWindow(name) {
     window.style.top = '100px';
     window.innerHTML = `
         <div class="window-header">
-            ${icon ? icon.svg : ''}
+            <div class="window-icon">${icon ? icon.svg : ''}</div>
             <span>${name}</span>
             <div class="window-controls">
                 <span class="minimize">-</span>
@@ -555,7 +555,7 @@ function initializeTaskbar() {
         const svg = icon ? icon.svg : '';
         
         taskbarItem.innerHTML = `
-            ${svg}
+            <div class="taskbar-icon">${svg}</div>
             <span>${app}</span>
         `;
         
