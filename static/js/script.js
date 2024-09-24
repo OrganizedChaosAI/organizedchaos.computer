@@ -161,13 +161,49 @@ function openWindow(name) {
     let existingWindow = document.querySelector(`.window[data-app="${name}"]`);
     if (existingWindow) {
         if (existingWindow.style.display === 'none') {
+            const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
+            const rect = taskbarItem.getBoundingClientRect();
+            existingWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
+            existingWindow.style.transform = 'scale(0.1)';
+            existingWindow.style.opacity = '0';
+            existingWindow.classList.add('maximizing');
             existingWindow.style.display = 'block';
+            requestAnimationFrame(() => {
+                existingWindow.style.transform = 'scale(1)';
+                existingWindow.style.opacity = '1';
+            });
+            setTimeout(() => {
+                existingWindow.classList.remove('maximizing');
+                existingWindow.style.transform = '';
+                existingWindow.style.opacity = '';
+            }, 300);
         }
         bringToFront(existingWindow);
         return;
     }
 
-    const window = createWindow(name);
+    const icon = icons.find(icon => icon.name.toLowerCase() === name.toLowerCase());
+    const window = document.createElement('div');
+    window.className = 'window';
+    window.setAttribute('data-app', name);
+    window.style.width = '400px';
+    window.style.height = '300px';
+    window.style.left = '100px';
+    window.style.top = '100px';
+    window.innerHTML = `
+        <div class="window-header">
+            ${icon ? icon.svg : ''}
+            <span>${name}</span>
+            <div class="window-controls">
+                <span class="minimize">-</span>
+                <span class="maximize">□</span>
+                <span class="close">×</span>
+            </div>
+        </div>
+        <div class="window-content">
+            ${getWindowContent(name)}
+        </div>
+    `;
     desktop.appendChild(window);
     window.style.display = 'block';
     makeDraggable(window);
@@ -176,11 +212,48 @@ function openWindow(name) {
 
     window.addEventListener('mousedown', () => bringToFront(window));
 
+    window.querySelector('.close').addEventListener('click', () => {
+        window.remove();
+        if (taskbarManagement && taskbarManagement.removeWindow) {
+            taskbarManagement.removeWindow(name);
+        }
+    });
+
+    window.querySelector('.minimize').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const rect = window.getBoundingClientRect();
+        const taskbarItem = document.querySelector(`.taskbar-item[data-app="${name}"]`);
+        const taskbarRect = taskbarItem.getBoundingClientRect();
+
+        window.style.transformOrigin = `${taskbarRect.left - rect.left}px ${taskbarRect.top - rect.top}px`;
+
+        window.classList.add('minimizing');
+        setTimeout(() => {
+            window.style.display = 'none';
+            window.classList.remove('minimizing');
+        }, 300);
+    });
+    
+    window.querySelector('.maximize').addEventListener('click', () => {
+        if (window.style.width === '100%') {
+            window.style.width = '400px';
+            window.style.height = '300px';
+            window.style.top = '100px';
+            window.style.left = '100px';
+        } else {
+            window.style.width = '100%';
+            window.style.height = 'calc(100% - 40px)';
+            window.style.top = '0';
+            window.style.left = '0';
+        }
+    });
+
     initializeAppFunctionality(name, window);
     
     if (taskbarManagement && taskbarManagement.createTaskbarItem) {
         taskbarManagement.createTaskbarItem(name);
     }
+    bringToFront(window);
 }
 
 function createWindow(name, type = 'default') {
@@ -472,7 +545,7 @@ function initializeTaskbar() {
 
     function createTaskbarItem(app) {
         if (openWindows.has(app)) return;
-
+    
         openWindows.add(app);
         const taskbarItem = document.createElement('div');
         taskbarItem.className = 'taskbar-item';
@@ -490,10 +563,35 @@ function initializeTaskbar() {
             const appWindow = document.querySelector(`.window[data-app="${app}"]`);
             if (appWindow) {
                 if (appWindow.style.display === 'none') {
+                    const rect = taskbarItem.getBoundingClientRect();
+                    appWindow.style.transformOrigin = `${rect.left}px ${rect.top}px`;
+                    appWindow.style.transform = 'scale(0.1)';
+                    appWindow.style.opacity = '0';
                     appWindow.style.display = 'block';
+                    
+                    requestAnimationFrame(() => {
+                        appWindow.classList.add('maximizing');
+                        appWindow.style.transform = 'scale(1)';
+                        appWindow.style.opacity = '1';
+                    });
+        
+                    appWindow.addEventListener('transitionend', function handler() {
+                        appWindow.classList.remove('maximizing');
+                        appWindow.style.transform = '';
+                        appWindow.style.opacity = '';
+                        appWindow.removeEventListener('transitionend', handler);
+                    });
                     bringToFront(appWindow);
                 } else if (appWindow.classList.contains('active')) {
-                    appWindow.style.display = 'none';
+                    const rect = appWindow.getBoundingClientRect();
+                    const taskbarRect = taskbarItem.getBoundingClientRect();
+                    appWindow.style.transformOrigin = `${taskbarRect.left - rect.left}px ${taskbarRect.top - rect.top}px`;
+                    appWindow.classList.add('minimizing');
+                    setTimeout(() => {
+                        appWindow.style.display = 'none';
+                        appWindow.classList.remove('minimizing');
+                        taskbarItem.classList.remove('active');
+                    }, 300);
                 } else {
                     bringToFront(appWindow);
                 }
