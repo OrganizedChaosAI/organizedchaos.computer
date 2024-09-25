@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organized Chaos Computer</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/icon.png') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/alpha.css') }}">
+</head>
+<body>
+    <div id="desktop"></div>
+    <div id="taskbar">
+        <div id="start-button">
+            <svg width="20" height="20" viewBox="0 0 88 88">
+                <path d="M0,12.402,35.687,7.215V41.463H0ZM40,6.908,87.3,0V41.041H40Zm0,39.15H87.3V88L40,81.091ZM0,45.568H35.687V79.815L0,74.628Z" fill="#fff"/>
+            </svg>
+        </div>
+        <div id="datetime"></div>
+    </div>
+    <div id="context-menu">
+        <div id="new-folder">New Folder</div>
+        <div id="refresh">Refresh</div>
+        <div id="custom-icon">Create Custom Icon</div>
+    </div>
+    <div id="start-menu"></div>
+    <div id="windows-logo">
+        <svg viewBox="0 0 88 88">
+            <path d="M0,12.402,35.687,7.215V41.463H0ZM40,6.908,87.3,0V41.041H40Zm0,39.15H87.3V88L40,81.091ZM0,45.568H35.687V79.815L0,74.628Z" fill="#00a4ef"/>
+        </svg>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/alpha.js') }}" type="module"></script>
+</body>
+</html>
